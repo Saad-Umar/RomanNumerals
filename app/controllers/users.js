@@ -5,6 +5,21 @@ var imageUploader = require('../../image-uploader');
 module.exports = {};
 
 //User Creation
+
+module.exports.check = function(req,res) {
+    if (!req.params.emailID) {
+        res.status(400).send('Invalid parameters');
+    }
+
+    User.findOne({'local.email':req.params.emailID}, function(err,user){
+        if (user){
+            return res.status(400).send('User already exists');
+        } else {
+            return res.status(200).send('Email available');
+        }
+    });
+};
+
 module.exports.create = function(req,res,next) {
     if (!req.body.name || !req.body.email || !req.body.password || !req.body.gender || !req.body.city || !req.file) {
         console.log('this1');
@@ -46,8 +61,6 @@ module.exports.create = function(req,res,next) {
         }
     });
 };
-
-
 module.exports.login = function(req,res,next){
     console.log('In Users login1');
     passport.authenticate('local-login',function(err, user, info) {
