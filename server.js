@@ -1,6 +1,9 @@
 'use strict'
 
 var express = require('express');
+
+
+
 var app = express();
 var port = process.env.PORT || 3000;
 var mongoose = require('mongoose');
@@ -10,6 +13,7 @@ var flash = require('connect-flash');
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var formidable = require('express-formidable');
 var session = require('express-session');
 
 var configDB = require('./config/database.js');
@@ -22,7 +26,8 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+//app.use(formidable());
+//app.use(upload.single('random'));
 
 app.use(session({secret: 'ilovenodejs'}));
 app.use(passport.initialize());

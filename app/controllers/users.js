@@ -1,33 +1,52 @@
 var User = require('../models/user');
 var passport = require('passport');
+var imageUploader = require('../../image-uploader');
 
 module.exports = {};
 
 //User Creation
-module.exports.create = function(req,res) {
-    console.log('In create');
-    if (!req.body.email || !req.body.password ) {
-        return res.status(400).end('Invalid parameters');
+module.exports.create = function(req,res,next) {
+    if (!req.body.name || !req.body.email || !req.body.password || !req.body.gender || !req.body.city || !req.file) {
+        console.log('this1');
+
+        res.status(400).send('Invalid parameters');
     }
 
     User.findOne({'local.email': req.body.email}, function(err,user) {
+        console.log('this2');
         if (user) {
-            return res.status(400).end('User already exists');
+            console.log('this3');
+
+            return res.status(400).send('User already exists');
         } else {
 
+            console.log('this');
+
             var newUser = new User();
+            newUser.local.name = req.body.name;
+            //newUser.local.photo = req.body.photo;
             newUser.local.email = req.body.email;
             newUser.local.password = newUser.generateHash(req.body.password);
-            newUser.save();
 
-            res.writeHead(200,{"Content-Type":"application/json"});
+            imageUploader.upload(req.file.path, req.body.email).then(function (result){
+                newUser.local.photo = result.url;
+                newUser.save().then(function (user) {
+                    //res.writeHead(200,{"Content-Type":"multipart/form-data"});
 
-            newUser = newUser.toObject();
-            delete newUser.local.password;
-            res.end(JSON.stringify(newUser));
+                    user = user.toObject();
+                    delete user.local.password;
+                    res.status(200).send(JSON.stringify(user));
+                })
+
+            }).catch(function(error) {
+                console.log('this4');
+
+                res.status(400).send("ERROR");
+            })
         }
-    })
+    });
 };
+
 
 module.exports.login = function(req,res,next){
     console.log('In Users login1');
