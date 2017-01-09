@@ -10,6 +10,8 @@ var userSchema = mongoose.Schema({
         gender: String,
         city: String,
         country: String
+        //reviews[]
+        //photos[]
     },
     facebook : {
         id : String,
@@ -26,13 +28,11 @@ var userSchema = mongoose.Schema({
 });
 
 // Generate Hash for the password
-
 userSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
 // Is the password valid
-
 userSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.local.password);
 };

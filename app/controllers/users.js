@@ -6,7 +6,7 @@ var secret = require('../../config/auth').jsonSecret;
 
 
 module.exports = {};
-var _this = this;
+
 
 //Important: Correct all status codes and responses.
 
@@ -59,11 +59,14 @@ module.exports.create = function(req,res,next) {
                     user = user.toObject();
                     delete user.local.password;
                     delete user.__v;
-                    delete user._id;
 
                     var token = jwt.sign(user, secret, {
                         expiresIn: 60*60*24 // expires in 24 hours
                     });
+
+                    delete user._id;
+
+
                     user.local["token"] = token;
                     res.status(200).send(JSON.stringify(user));
                 })
@@ -71,7 +74,7 @@ module.exports.create = function(req,res,next) {
             }).catch(function(error) {
                 console.log('this4');
 
-                res.status(400).send("ERROR");
+                res.status(400).send("error");
             })
         }
     });
@@ -105,7 +108,7 @@ module.exports.profile = function(req,res,next){
     })
 };
 
-//Helpers in one place, later
+//Helpers in one place, later dude later....
 //
 // module.exports.generateToken = function(user){
 //     //User Creation
