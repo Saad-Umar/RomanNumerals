@@ -7,7 +7,7 @@ var User = require('../app/models/user');
 module.exports = function(passport) {
 
     passport.serializeUser(function(user,done) {
-        done(null,user.id);
+        done(null,user._id);
     });
 
     passport.deserializeUser(function(id,done){
@@ -17,7 +17,6 @@ module.exports = function(passport) {
     });
 
     //Local SignUp
-
     passport.use('local-signup', new LocalStrategy({
         usernameField : 'email',
         passwordField : 'password',

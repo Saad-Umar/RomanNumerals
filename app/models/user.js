@@ -1,8 +1,5 @@
-
-
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
-
 
 var userSchema = mongoose.Schema({
     local : {
@@ -27,7 +24,6 @@ var userSchema = mongoose.Schema({
         name : String
     }
 });
-
 
 // Generate Hash for the password
 
