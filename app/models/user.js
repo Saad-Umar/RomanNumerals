@@ -12,7 +12,8 @@ var userSchema = mongoose.Schema({
         gender: String,
         city: String,
         country: String,
-        reviews : [{type:String, ref: 'Review'}]
+        favourites: [{type:mongoose.Schema.Types.ObjectId, ref: 'Business'}],
+        reviews : [{type:mongoose.Schema.Types.ObjectId, ref: 'Review'}]
         //photosPosted : [String]
     },
     facebook : {

@@ -10,7 +10,7 @@ module.exports = {};
 
 //Important: Correct all status codes and responses.
 
-//Email Availibilty Check
+//Email Availability Check
 module.exports.check = function(req,res) {
     if (!req.params.emailID) {
         res.status(400).send('Invalid parameters');
@@ -57,13 +57,14 @@ module.exports.create = function(req,res,next) {
                     console.log('I am here');
 
                     user = user.toObject();
-                    delete user.local.password;
-                    delete user.__v;
 
-                    var token = jwt.sign(user, secret, {
+
+                    var token = jwt.sign(user._id, secret, {
                         expiresIn: 60*60*24 // expires in 24 hours
                     });
 
+                    delete user.local.password;
+                    delete user.__v;
                     delete user._id;
 
 
@@ -79,35 +80,81 @@ module.exports.create = function(req,res,next) {
         }
     });
 };
-//Login User
+//User Login
 module.exports.login = function(req,res,next){
     console.log('In Users login1');
-    passport.authenticate('local-login',function(err, user, info) {
-        console.log('In Users login2');
+    //Removing Passport
+    // passport.authenticate('local-login',function(err, user, info) {
+    //     console.log(info);
+    //     console.log(err);
+    //     console.log(user);
+    //     console.log('In Users login2');
+    //     if (err)
+    //         return next(err);
+    //     if (!user)
+    //         return res.status(400).json({status: 0, message: "Invalid Credentials"});
+    //     req.login(user, function(err){
+    //         if (err)
+    //             return next(err);
+    //         if (!err)
+    //             var token = generateToken(user._id);
+    //             return res.json({ status: 1, message: "Logged in!",token: token });
+    //     });
+    // })(req,res,next);
+    console.log(req.body.email);
+    console.log(req.body.password);
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).send("Invalid parameters");
+    }
+    User.findOne({'local.email':'email'},function(err,user){
+        console.log('Start');
+        console.log(user);
+        console.log(err);
+        console.log('End');
         if (err)
-            return next(err);
-        if (!user)
-            return res.status(400).json({status: 0, message: "Invalid Credentials"});
-        req.login(user, function(err){
-            if (err)
-                return next(err);
-            if (!err)
-                var token = generateToken(user);
-                return res.json({ status: 1, message: "Logged in!",token: token });
-        });
-    })(req,res,next);
+            res.status(400).send("error");
+        if (!user.validPassword('password')) {
+            res.status(401).json({status:0, message:"Invalid Password"});
+        } else {
+            var token = jwt.sign(user._id, secret, {
+                expiresIn: 60*60*24 // expires in 24 hours
+            });
+            res.status(200).json({status:0, message:"Logged in!", token: token});
+
+        }
+    })
 };
 //User Profile
 module.exports.profile = function(req,res,next){
-    var userID = req.params.userID;
+    var userID = req.decoded._id;
     var ObjectID = require('mongodb').ObjectID;
     var obj_ID = new ObjectID("'"+userID+"'");
 
     User.findOne({_id:obj_ID},function(err,obj){
         res.status(200).json(obj);
-    })
+    });
 };
+//User favourites
+module.exports.favourites = function(req,res,next){
+    var userID = req.decoded._id;
+    var ObjectID = require('mongodb').ObjectID;
+    var obj_ID = new ObjectID("'"+userID+"'");
 
+    User
+        .findOne({_id:obj_ID})
+        .populate('favourites')
+        .exec(function (err, favourites) {
+            if (err) return handleError(err);
+            console.log('The count of favourites is %s', user.favourites.count);
+            res.status(200).json(favourites);
+
+        });
+
+};
+//favourite a business
+module.exports.favourite = function(req,res,next){
+
+};
 //Helpers in one place, later dude later....
 //
 // module.exports.generateToken = function(user){

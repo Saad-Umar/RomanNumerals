@@ -9,7 +9,9 @@ module.exports = function(app, passport) {
     app.get('/checkemail/:emailID',users.check);
     app.post('/signup',middlewares.photo, users.create);
     app.post('/login',users.login);
-    app.get('/userprofile/:userID',authenticateRequest,users.profile);
+    app.get('/userprofile',authenticateRequest,users.profile);
+    app.get('/userfavourites',authenticateRequest, users.favourites);
+    app.get('/userfavourites/:businessID',authenticateRequest,users.favourite);
     //app.post('/newsfeed',..);
     //app.post('/search',)
     //app.get('/businessList',);

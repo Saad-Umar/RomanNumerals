@@ -52,12 +52,10 @@ module.exports = function(passport) {
 
     //Local Login
     passport.use('local-login', new LocalStrategy({
-
-        usernameField : 'email',
-        passwordField : 'password',
         passReqToCallback : true
     },
     function(req,email,password,done) {
+        console.log('authenticate working');
         console.log('in passport');
         User.findOne({'local.email': email}, function (err, user) {
 
