@@ -1,11 +1,9 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
-var User = require('./user');
-var Business = require('./business');
+
 
 var reviewSchema = mongoose.Schema({
-
     //rating
     //Agree Disagree
     //content
@@ -17,8 +15,8 @@ var reviewSchema = mongoose.Schema({
     disagree: Number,
     content: String,
     time: Date,
-    postedBy: User,
-    postedOn: Business
+    postedBy: {type:String,ref:"User"},
+    postedOn: {type:String,ref:"Business"}
 });
 
 module.exports = mongoose.model('Review', reviewSchema);

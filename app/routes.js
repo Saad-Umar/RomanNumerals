@@ -14,6 +14,8 @@ module.exports = function(app, passport) {
     //app.post('/search',)
     //app.get('/businessList',);
 
+
+
     function authenticateRequest(req,res,next){
         var token = req.headers['x-access-token'];
 
