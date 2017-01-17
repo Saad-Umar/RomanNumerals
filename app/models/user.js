@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
-
+var multer  = require('multer');
+var upload = multer();
 
 var userSchema = mongoose.Schema({
     local : {

@@ -83,76 +83,79 @@ module.exports.create = function(req,res,next) {
 //User Login
 module.exports.login = function(req,res,next){
     console.log('In Users login1');
-    //Removing Passport
-    // passport.authenticate('local-login',function(err, user, info) {
-    //     console.log(info);
-    //     console.log(err);
-    //     console.log(user);
-    //     console.log('In Users login2');
-    //     if (err)
-    //         return next(err);
-    //     if (!user)
-    //         return res.status(400).json({status: 0, message: "Invalid Credentials"});
-    //     req.login(user, function(err){
-    //         if (err)
-    //             return next(err);
-    //         if (!err)
-    //             var token = generateToken(user._id);
-    //             return res.json({ status: 1, message: "Logged in!",token: token });
-    //     });
-    // })(req,res,next);
     console.log(req.body.email);
     console.log(req.body.password);
     if (!req.body.email || !req.body.password) {
         return res.status(400).send("Invalid parameters");
     }
-    User.findOne({'local.email':'email'},function(err,user){
-        console.log('Start');
-        console.log(user);
-        console.log(err);
-        console.log('End');
+    User.findOne({'local.email':req.body.email},function(err,user){
         if (err)
             res.status(400).send("error");
-        if (!user.validPassword('password')) {
-            res.status(401).json({status:0, message:"Invalid Password"});
-        } else {
-            var token = jwt.sign(user._id, secret, {
-                expiresIn: 60*60*24 // expires in 24 hours
-            });
-            res.status(200).json({status:0, message:"Logged in!", token: token});
+        if (user) {
+            if (!user.validPassword(req.body.password)) {
+                res.status(401).json({status: 0, message: "Invalid Password"});
+            } else {
+                console.log('user id');
+                console.log(user._id);
+                var token = jwt.sign(req.body.email, secret, {
+                    expiresIn: 60 * 60 * 24 // expires in 24 hours
+                });
+                res.status(200).json({status: 1, message: "Logged in!", token: token});
 
+            }
+        } else {
+            res.status(404).json({status:0, message: "Email doesn't exist"});
         }
     })
 };
 //User Profile
 module.exports.profile = function(req,res,next){
-    var userID = req.decoded._id;
-    var ObjectID = require('mongodb').ObjectID;
-    var obj_ID = new ObjectID("'"+userID+"'");
+    var userID = req.decoded.id;
 
-    User.findOne({_id:obj_ID},function(err,obj){
-        res.status(200).json(obj);
+    User.findOne({_id:userID},function(err,obj){
+        if (err)
+            res.status(400).send("error");
+        if (obj)
+            res.status(200).json(obj);
     });
 };
 //User favourites
 module.exports.favourites = function(req,res,next){
-    var userID = req.decoded._id;
-    var ObjectID = require('mongodb').ObjectID;
-    var obj_ID = new ObjectID("'"+userID+"'");
+    var userID = req.decoded.id;
 
     User
-        .findOne({_id:obj_ID})
+        .findOne({_id:userID})
         .populate('favourites')
-        .exec(function (err, favourites) {
+        .exec(function (err, user) {
             if (err) return handleError(err);
-            console.log('The count of favourites is %s', user.favourites.count);
-            res.status(200).json(favourites);
+            console.log('The count of favourites is %s', user.local.favourites);
+            res.status(200).json(user.local.favourites);
 
         });
 
 };
+
 //favourite a business
+//In Progress, to be contined after "Add a business"
 module.exports.favourite = function(req,res,next){
+
+     var userID = req.decoded.id;
+     var businessID = req.params.businessID;
+
+     User.findById(userID, function(err,user){
+        if (err)
+            res.status(400).send("error");
+        if (user) {
+            user.local.favourite.push(businessID);
+            res.status(200).json({status:1, message:"Favourited!"});
+        }
+
+     })
+};
+
+
+
+module.exports.addbusiness = function(req,res,next){
 
 };
 //Helpers in one place, later dude later....
