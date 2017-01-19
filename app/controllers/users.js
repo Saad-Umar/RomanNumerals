@@ -1,4 +1,5 @@
 var User = require('../models/user');
+var Business = require('../models/business');
 var passport = require('passport');
 var imageUploader = require('../../image-uploader');
 var jwt = require('jsonwebtoken');
@@ -34,6 +35,9 @@ module.exports.create = function(req,res,next) {
 
     User.findOne({'local.email': req.body.email}, function(err,user) {
         console.log('this2');
+        if (err) {
+            res.status(400).send(err);
+        }
         if (user) {
             console.log('this3');
 
@@ -47,7 +51,6 @@ module.exports.create = function(req,res,next) {
             //newUser.local.photo = req.body.photo;
             newUser.local.email = req.body.email;
             newUser.local.password = newUser.generateHash(req.body.password);
-
 
 
             imageUploader.upload(req.file.path, req.body.email).then(function (result){
@@ -155,8 +158,73 @@ module.exports.favourite = function(req,res,next){
 
 
 
-module.exports.addbusiness = function(req,res,next){
+module.exports.addbusiness = function(req,res,next) {
 
+    console.log(req.file);
+    console.log();
+    console.log();
+    console.log();
+    console.log();
+    console.log();
+
+    if (!req.body.name || !req.body.category || !req.body.address || !req.body.email || !req.body.contact ||
+        !req.body.website || !req.body.info || !req.body.verified || !req.body.featuredInSearch ||
+        !req.body.featuredInCategory || (req.body.tags.length == 2 || req.body.tags.length == 6) ||
+         req.files.count != 2) {
+
+        return res.status(400).send("Invalid Parameters");
+    }
+
+    Business.findOne({'name':req.body.name}, function(err,business){
+        if (err) {
+            res.status(400).send(err);
+        }
+
+        if (business) {
+            res.status(400).send('A business already exists with this name')
+        }
+
+        var newBusiness = new Business();
+        newBusiness.name = req.body.name;
+        newBusiness.category = req.body.category;
+        newBusiness.address = req.body.address;
+        newBusiness.contact = req.body.contact;
+        newBusiness.website = req.body.website;
+        newBusiness.info = req.body.info;
+        newBusiness.verified = req.body.verified;
+        newBusiness.featuredInSearch = req.body.featuredInSearch;
+        newBusiness.featuredInCategory = req.body.featuredInCategory;
+        newBusiness.tags = req.body.tags;
+        newBusiness.coordinates = req.body.coordinates;
+
+
+        imageUploader.upload(req.file[0].path, req.body.email + 'logo').then(function (result){
+            newBusiness.logo = result.url;
+
+            imageUploader.upload(req.file[1].path, req.body.email + 'banner').then(function (result){
+                newBusiness.banner = result.url;
+                newBusiness.save().then(function (business) {
+
+
+                    business = business.toObject();
+
+                    delete business.__v;
+
+                    res.status(200).send(JSON.stringify(business));
+                })
+
+            }).catch(function(error) {
+
+                res.status(400).send(error);
+            })
+
+        }).catch(function(error) {
+            console.log('this4');
+
+            res.status(400).send(error);
+        })
+
+    })
 };
 //Helpers in one place, later dude later....
 //

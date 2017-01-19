@@ -25,10 +25,11 @@ mongoose.connect(configDB.url);
 
 app.use(morgan('dev'));
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(formidable());
-//app.use(upload.single('random'));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb'}));
 
 app.use(session({secret: 'ilovenodejs'}));
 app.use(passport.initialize());

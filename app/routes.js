@@ -14,10 +14,19 @@ module.exports = function(app, passport) {
     app.get('/userprofile',authenticateRequest,users.profile);
     app.get('/userfavourites',authenticateRequest, users.favourites);
     app.get('/userfavourites/:businessID',authenticateRequest,users.favourite);
-    app.post('/addbusiness',authenticateRequest,users.addbusiness);
+
+    //To be changed
+    app.post('/addbusiness',middlewares.photos,users.addbusiness);
+
     //app.post('/newsfeed',..);
     //app.post('/search',);
     //app.get('/businessList',);
+    //app.get('/featureBusiness/:businessID',); //Limit - 2, rest in pipeline, expiry
+    //app.get('/removeFeaturedBusiness/:businessID',);
+    //app.get('/categoryFeatureBusiness/:businessID',); //Limit - 1, rest in pipeline, expiry
+    //app.get('/removeFeatureBusiness/:businessID',);
+
+
 
     function authenticateRequest(req,res,next){
         var token = req.headers['x-access-token'];

@@ -26,7 +26,8 @@ module.exports.upload = function image_upload(path,id){
 module.exports.middlewares = {
     //Move single to it's proper place, doesnt belong in the image uploader
     single : upload.single(),
-    photo: upload.single('photo')
+    photo: upload.single('photo'),
+    photos: upload.array('photos',2)
 
 };
 
