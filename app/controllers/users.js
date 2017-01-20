@@ -100,8 +100,8 @@ module.exports.login = function(req,res,next){
             } else {
                 console.log('user id');
                 console.log(user._id);
-                var token = jwt.sign(req.body.email, secret, {
-                    expiresIn: 60 * 60 * 24 // expires in 24 hours
+                var token = jwt.sign(user._id, secret, {
+                    expiresIn: '24h' // expires in 24 hours
                 });
                 res.status(200).json({status: 1, message: "Logged in!", token: token});
 
@@ -160,17 +160,16 @@ module.exports.favourite = function(req,res,next){
 
 module.exports.addbusiness = function(req,res,next) {
 
-    console.log(req.file);
-    console.log();
-    console.log();
-    console.log();
-    console.log();
-    console.log();
+    console.log("Add a business");
+
+
+    console.log(req.files.length);
+    console.log(req.body.tags.length <= 6);
 
     if (!req.body.name || !req.body.category || !req.body.address || !req.body.email || !req.body.contact ||
         !req.body.website || !req.body.info || !req.body.verified || !req.body.featuredInSearch ||
-        !req.body.featuredInCategory || (req.body.tags.length == 2 || req.body.tags.length == 6) ||
-         req.files.count != 2) {
+        !req.body.featuredInCategory || !(req.body.tags.length >= 2 && req.body.tags.length <= 6) ||
+        !(req.files.length == 2)) {
 
         return res.status(400).send("Invalid Parameters");
     }
@@ -198,14 +197,23 @@ module.exports.addbusiness = function(req,res,next) {
         newBusiness.coordinates = req.body.coordinates;
 
 
-        imageUploader.upload(req.file[0].path, req.body.email + 'logo').then(function (result){
+        imageUploader.upload(req.files[0].path, req.body.email + '/logo').then(function (result){
             newBusiness.logo = result.url;
 
-            imageUploader.upload(req.file[1].path, req.body.email + 'banner').then(function (result){
+            console.log('In first block');
+            imageUploader.upload(req.files[1].path, req.body.email + '/' +
+                'banner').then(function (result){
                 newBusiness.banner = result.url;
-                newBusiness.save().then(function (business) {
+                console.log(newBusiness);
+                newBusiness.save(function(err) {
+                        if (err) {
+                           res.status(400).send(err);
+                        }
+                    }
+                ).then(function (business) {
 
 
+                    console.log('In Save');
                     business = business.toObject();
 
                     delete business.__v;

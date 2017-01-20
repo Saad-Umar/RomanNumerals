@@ -15,8 +15,15 @@ module.exports = function(app, passport) {
     app.get('/userfavourites',authenticateRequest, users.favourites);
     app.get('/userfavourites/:businessID',authenticateRequest,users.favourite);
 
+
+    //Admin side
+    app.post('/adminsignup');
+    app.post('/adminlogin');
     //To be changed
-    app.post('/addbusiness',middlewares.photos,users.addbusiness);
+    app.post('/addbusiness',authenticateRequest,middlewares.photos,users.addbusiness);
+
+    app.post('/deletebusiness',authenticatedRequests,user.deletebusines); // only falsify, dont delete actually
+    app.post('',authenticateRequest);
 
     //app.post('/newsfeed',..);
     //app.post('/search',);

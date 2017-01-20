@@ -14,7 +14,7 @@ var businessSchema = mongoose.Schema({
     reviews: [{type:mongoose.Schema.Types.ObjectId,ref:"Review"}],
     //subCategory: [String], not needed
     tags: [String],
-    coordinates: {lat:String,long:String},
+    coordinates: [Number],
     address: String,
     info: String,
     contact: String,
