@@ -128,7 +128,7 @@ module.exports.favourites = function(req,res,next){
 
     User
         .findOne({_id:userID})
-        .populate('favourites')
+        .populate('local.favourites')
         .exec(function (err, user) {
             if (err) return handleError(err);
             console.log('The count of favourites is %s', user.local.favourites);
@@ -145,13 +145,24 @@ module.exports.favourite = function(req,res,next){
      var userID = req.decoded.id;
      var businessID = req.params.businessID;
 
+     console.log(businessID);
+     console.log('TADAA!')
      User.findById(userID, function(err,user){
         if (err)
-            res.status(400).send("error");
+            return res.status(400).send(err);
         if (user) {
-            user.local.favourite.push(businessID);
-            res.status(200).json({status:1, message:"Favourited!"});
+
+            return res.status(200).send(user);
+            user.local.favourites.push(businessID);
+            user.save(function(err,user){
+                if (err) {
+                    return res.status(400).send(err);
+                }
+                return res.status(200).send('Favourited!');
+            });
+
         }
+
 
      })
 };
@@ -195,7 +206,7 @@ module.exports.addbusiness = function(req,res,next) {
         newBusiness.featuredInCategory = req.body.featuredInCategory;
         newBusiness.tags = req.body.tags;
         newBusiness.coordinates = req.body.coordinates;
-
+        newBusiness.deleted = false;
 
         imageUploader.upload(req.files[0].path, req.body.email + '/logo').then(function (result){
             newBusiness.logo = result.url;
@@ -233,6 +244,17 @@ module.exports.addbusiness = function(req,res,next) {
         })
 
     })
+};
+
+module.exports.deletebusiness = function(req,res,next) {
+    Business.findOne({_id:req.params.businessID},function(err,business){
+        if (err) {
+            return res.status(400).send(err);
+        }
+        business.deleted = true;
+        return res.status(200).send('Business deleted!');
+    });
+
 };
 //Helpers in one place, later dude later....
 //

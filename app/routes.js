@@ -22,8 +22,8 @@ module.exports = function(app, passport) {
     //To be changed
     app.post('/addbusiness',authenticateRequest,middlewares.photos,users.addbusiness);
 
-    app.post('/deletebusiness',authenticatedRequests,user.deletebusines); // only falsify, dont delete actually
-    app.post('',authenticateRequest);
+    app.delete('/deletebusiness/:businessID',authenticateRequest,users.deletebusiness);
+    //app.post('',authenticateRequest);
 
     //app.post('/newsfeed',..);
     //app.post('/search',);

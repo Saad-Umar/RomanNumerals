@@ -13,7 +13,7 @@ var userSchema = mongoose.Schema({
         gender: String,
         city: String,
         country: String,
-        favourites: [{type:mongoose.Schema.Types.ObjectId, ref: 'Business'}],
+        favourites: [{type:String, ref: 'Business'}],
         reviews : [{type:mongoose.Schema.Types.ObjectId, ref: 'Review'}]
         //photosPosted : [String]
     },
