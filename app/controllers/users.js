@@ -115,11 +115,17 @@ module.exports.login = function(req,res,next){
 module.exports.profile = function(req,res,next){
     var userID = req.decoded.id;
 
-    User.findOne({_id:userID},function(err,obj){
+    User.findOne({_id:userID},function(err,user){
         if (err)
             res.status(400).send("error");
-        if (obj)
-            res.status(200).json(obj);
+        if (user) {
+            user = user.toObject();
+            delete user._id;
+            delete user.__v;
+            delete user.local.password;
+
+            res.status(200).json(user);
+        }
     });
 };
 //User favourites
@@ -131,7 +137,7 @@ module.exports.favourites = function(req,res,next){
         .populate('local.favourites')
         .exec(function (err, user) {
             if (err) return handleError(err);
-            console.log('The count of favourites is %s', user.local.favourites);
+
             res.status(200).json(user.local.favourites);
 
         });
@@ -151,8 +157,6 @@ module.exports.favourite = function(req,res,next){
         if (err)
             return res.status(400).send(err);
         if (user) {
-
-            return res.status(200).send(user);
             user.local.favourites.push(businessID);
             user.save(function(err,user){
                 if (err) {
@@ -257,6 +261,7 @@ module.exports.deletebusiness = function(req,res,next) {
 
 };
 //Helpers in one place, later dude later....
+//
 //
 // module.exports.generateToken = function(user){
 //     //User Creation
