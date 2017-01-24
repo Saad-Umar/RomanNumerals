@@ -143,9 +143,7 @@ module.exports.favourites = function(req,res,next){
         });
 
 };
-
-//favourite a business
-//In Progress, to be contined after "Add a business"
+//Favourite a business
 module.exports.favourite = function(req,res,next){
 
      var userID = req.decoded.id;
@@ -170,9 +168,7 @@ module.exports.favourite = function(req,res,next){
 
      })
 };
-
-
-
+//Add a business
 module.exports.addbusiness = function(req,res,next) {
 
     console.log("Add a business");
@@ -249,7 +245,7 @@ module.exports.addbusiness = function(req,res,next) {
 
     })
 };
-
+//Delete a business
 module.exports.deletebusiness = function(req,res,next) {
     Business.findOne({_id:req.params.businessID},function(err,business){
         if (err) {
@@ -259,6 +255,25 @@ module.exports.deletebusiness = function(req,res,next) {
         return res.status(200).send('Business deleted!');
     });
 
+};
+//Get
+module.exports.businesslist = function (req,res,next) {
+
+    var category = req.body.category;
+    var tags = req.body.tags;
+//({ department: { $in: [ "sales", "engineering" } } });
+    console.log(category);
+    console.log(tags);
+
+    if (!category || !tags)
+        return res.status(400).send('Invalid parameters');
+
+    Business.find({category:category,tags:{"$in":req.body.tags}}).lean().exec(function(err,businesslist){
+        if (err)
+            return res.status(400).send(err);
+        if (businesslist)
+            return res.status(200).json(businesslist);
+    });
 };
 //Helpers in one place, later dude later....
 //

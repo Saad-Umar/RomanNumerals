@@ -5,6 +5,7 @@ var jwt = require('jsonwebtoken');
 var secret = require('../config/auth').jsonSecret;
 
 
+//Important: Change methods to their accurate variants
 
 module.exports = function(app, passport) {
 
@@ -14,6 +15,8 @@ module.exports = function(app, passport) {
     app.get('/userprofile',authenticateRequest,users.profile);
     app.get('/userfavourites',authenticateRequest, users.favourites);
     app.get('/userfavourites/:businessID',authenticateRequest,users.favourite);
+
+    app.post('/businesslist',authenticateRequest,middlewares.single,users.businesslist);
 
 
     //Admin side
