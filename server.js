@@ -25,6 +25,9 @@ var API_KEY = "AIzaSyA_6Gp_rOM9oX43UUtcTZTWxDqNAnVBQKo";
 var serviceAccount = require("./config/top-5-b89d2-firebase-adminsdk-a3i8k-0bc64d4ba6.json");
 
 
+require('newrelic');
+
+
 // Initialize the app with a service account, granting admin privileges
 firebase.initializeApp({
     credential: firebase.credential.cert(serviceAccount),
