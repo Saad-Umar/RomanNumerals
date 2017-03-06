@@ -9,6 +9,10 @@ var secret = require('../config/auth').jsonSecret;
 
 module.exports = function(app, passport) {
 
+    //For New Relic
+    app.get('/', function(req,res) {
+        return res.status(200).send("Server is up!");
+    });
     app.get('/checkemail/:emailID',users.check);
     app.post('/signup',middlewares.photo, users.create);
     app.post('/login',middlewares.single,users.login);
