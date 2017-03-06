@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
 
 
-
-
 var reviewSchema = mongoose.Schema({
     //rating
     //Agree Disagree

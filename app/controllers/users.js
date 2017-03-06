@@ -10,6 +10,7 @@ module.exports = {};
 
 
 //Important: Correct all status codes and responses.
+//IMPORTANT: use deselect query whereever neccessary. Also, use  lean()
 
 //Email Availability Check
 module.exports.check = function(req,res) {
@@ -268,13 +269,14 @@ module.exports.businesslist = function (req,res,next) {
     if (!category || !tags)
         return res.status(400).send('Invalid parameters');
 
-    Business.find({category:category,tags:{"$in":req.body.tags}}).lean().exec(function(err,businesslist){
+    Business.find({deleted:false, category:category,tags:{"$in":req.body.tags}}).select('-_id -__v').lean().exec(function(err,businesslist){
         if (err)
             return res.status(400).send(err);
         if (businesslist)
             return res.status(200).json(businesslist);
     });
 };
+
 //Helpers in one place, later dude later....
 //
 //
