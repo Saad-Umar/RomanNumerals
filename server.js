@@ -1,5 +1,7 @@
 'use strict'
 
+require('newrelic');
+
 var express = require('express');
 
 
@@ -25,7 +27,7 @@ var API_KEY = "AIzaSyA_6Gp_rOM9oX43UUtcTZTWxDqNAnVBQKo";
 var serviceAccount = require("./config/top-5-b89d2-firebase-adminsdk-a3i8k-0bc64d4ba6.json");
 
 
-require('newrelic');
+
 
 
 // Initialize the app with a service account, granting admin privileges
@@ -49,7 +51,8 @@ function listenForNotificationRequests() {
                 message += " agreed with your review."
             }
         } else if (request.type == 1 ) {
-            message += "Congratulations, you just earned 1000 points in your prime voucher.\nTap here to open your wallet."
+            message += "Congratulations! You just earned 1000 points in your Prime Voucher.\nNow you can use the Prime Voucher to" +
+                " avail exciting deals & offers from any of our verified businesses."
         }
         sendNotificationToUser(
             request.recipient,
