@@ -117,5 +117,5 @@ app.use(flash());
 require('./config/passport')(passport);
 require('./app/routes')(app,passport);
 
-//app.listen(port);
+app.listen(port);
 console.log('Up and running on port: ' + port);
