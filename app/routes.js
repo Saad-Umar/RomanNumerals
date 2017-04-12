@@ -3,8 +3,8 @@ var express = require('express');
 var middlewares = require('../image-uploader').middlewares;
 var jwt = require('jsonwebtoken');
 var secret = require('../config/auth').jsonSecret;
-
-
+var multer = require('multer');
+var Table = require('./models/tables');
 //Important: Change methods to their accurate variants
 
 module.exports = function(app, passport) {
@@ -22,6 +22,53 @@ module.exports = function(app, passport) {
 
     app.post('/businesslist',authenticateRequest,middlewares.single,users.businesslist);
 
+
+    //Doesn't belong here, BAT
+    //app.post('/uploadtables',middlewares.csv,users.uploadtables);
+    var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, './uploads/');
+        },
+        filename: function (req, file, cb) {
+            var originalname = file.originalname;
+            var extension = originalname.split(".");
+            filename = Date.now() + '.' + extension[extension.length-1];
+            cb(null, filename);
+        }
+    });
+    app.post('/uploadtables', multer({storage: storage, dest: './uploads/'}).single('uploads'), function(req,res){
+        var table = new Table ({
+            userID: req.body.userID,
+            originalname: req.file.originalname,
+            encoding: req.file.encoding,
+            mimetype: req.file.mimetype,
+            destination:req.file.destination,
+            filename: req.file.filename,
+            path: req.file.path,
+            size: req.file.size
+        })
+        table.save(function(err){
+            if (err){
+                return res.status(400).send(err);
+            }
+            else {
+                return res.status(200).send('Table saved successfully, dude.');
+            }
+        })
+    });
+
+    app.get('/table/:userid', function(req,res) {
+        if (!req.params.userid) {
+            res.status(400).send('Invalid parameters');
+        }
+        Table.findOne({'userID':req.params.userid}, function (err,table) {
+          if (table) {
+              return res.status(200).send({'table':table});
+          }  else {
+              return res.status(200).send('Not found');
+          }
+        });
+    });
 
     //Admin side
     app.post('/adminsignup');

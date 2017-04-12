@@ -14,6 +14,7 @@
     "jsonwebtoken": "^7.2.1",
     "method-override": "~1.0.0",
     "mongoose": "~4.4",
+    "mongoose-file": "0.0.2",
     "morgan": "~1.0.0",
     "multer": "^1.2.1",
     "newrelic": "^1.37.2",

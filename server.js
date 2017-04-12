@@ -103,7 +103,7 @@ var configDB = require('./config/database.js');
 
 
 //The following has been commented out because atm only push service is needed, so no need to connect with mongo
-//mongoose.connect(configDB.url);
+mongoose.connect(configDB.url);
 
 
 

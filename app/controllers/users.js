@@ -276,6 +276,17 @@ module.exports.businesslist = function (req,res,next) {
             return res.status(200).json(businesslist);
     });
 };
+////Doesn't belong here, BAT
+module.exports.uploadtables = function (req,res,next) {
+
+    if (!req.file) {
+        return res.status(400).send("Invalid Parameters");
+    }
+
+    return res.status(200).send("success");
+
+};
+
 
 //Helpers in one place, later dude later....
 //
